@@ -6,6 +6,7 @@
 #include "platform.h"
 
 #include "foundation/constants.h"
+#include "foundation/compat.h"
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -357,19 +358,25 @@ const char *cbm_app_local_dir(void) {
 
 /* ── Cache directory ─────────────────────────────────────────── */
 
-const char *cbm_resolve_cache_dir(void) {
-    static char buf[CBM_SZ_1K];
-    char tmp[CBM_SZ_256] = "";
+const char *cbm_get_cache_dir(char *buf, size_t buf_sz) {
+    char tmp[CBM_SZ_1K] = "";
     cbm_safe_getenv("CBM_CACHE_DIR", tmp, sizeof(tmp), NULL);
     if (tmp[0]) {
-        snprintf(buf, sizeof(buf), "%s", tmp);
+        snprintf(buf, buf_sz, "%s", tmp);
         cbm_normalize_path_sep(buf);
         return buf;
     }
-    const char *home = cbm_get_home_dir();
-    if (!home) {
-        return NULL;
+    cbm_safe_getenv("XDG_CACHE_HOME", tmp, sizeof(tmp), NULL);
+    if (tmp[0]) {
+        snprintf(buf, buf_sz, "%s/codebase-memory-mcp", tmp);
+    } else {
+        const char *home = cbm_get_home_dir();
+        if (home) {
+            snprintf(buf, buf_sz, "%s/.cache/codebase-memory-mcp", home);
+        } else {
+            snprintf(buf, buf_sz, "%s/codebase-memory-mcp", cbm_tmpdir());
+        }
     }
-    snprintf(buf, sizeof(buf), "%s/.cache/codebase-memory-mcp", home);
+    cbm_normalize_path_sep(buf);
     return buf;
 }

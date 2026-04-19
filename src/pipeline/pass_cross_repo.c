@@ -48,13 +48,10 @@ static const char *cr_itoa(int v) {
 
 /* ── Helpers ─────────────────────────────────────────────────────── */
 
-static const char *cr_cache_dir(void) {
-    const char *dir = cbm_resolve_cache_dir();
-    return dir ? dir : cbm_tmpdir();
-}
-
 static void cr_db_path(const char *project, char *buf, size_t bufsz) {
-    snprintf(buf, bufsz, "%s/%s.db", cr_cache_dir(), project);
+    char cache_dir[CBM_SZ_1K];
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+    snprintf(buf, bufsz, "%s/%s.db", cache_dir, project);
 }
 
 /* Extract a JSON string property from properties_json.
@@ -552,7 +549,9 @@ static int match_typed_routes(cbm_store_t *src_store, const char *src_project,
 
 /* When target_projects = ["*"], scan the cache directory for all .db files. */
 static int collect_all_projects(char ***out) {
-    const char *dir = cr_cache_dir();
+    char cache_dir[CBM_SZ_1K];
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+    const char *dir = cache_dir;
     cbm_dir_t *d = cbm_opendir(dir);
     if (!d) {
         *out = NULL;

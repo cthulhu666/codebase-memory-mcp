@@ -359,12 +359,9 @@ int main(int argc, char **argv) {
 
     /* Open config store for runtime settings */
     char config_dir[CBM_SZ_1K];
-    const char *cfg_home = cbm_get_home_dir();
     cbm_config_t *runtime_config = NULL;
-    if (cfg_home) {
-        snprintf(config_dir, sizeof(config_dir), "%s", cbm_resolve_cache_dir());
-        runtime_config = cbm_config_open(config_dir);
-    }
+    cbm_get_cache_dir(config_dir, sizeof(config_dir));
+    runtime_config = cbm_config_open(config_dir);
 
     /* Create MCP server */
     g_server = cbm_mcp_server_new(NULL);

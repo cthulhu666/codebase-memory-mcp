@@ -21,11 +21,9 @@
 /* ── Path ────────────────────────────────────────────────────── */
 
 void cbm_ui_config_path(char *buf, int bufsz) {
-    const char *dir = cbm_resolve_cache_dir();
-    if (!dir) {
-        dir = cbm_tmpdir();
-    }
-    snprintf(buf, (size_t)bufsz, "%s/config.json", dir);
+    char cache_dir[CBM_SZ_1K];
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+    snprintf(buf, (size_t)bufsz, "%s/config.json", cache_dir);
 }
 
 /* ── Load ────────────────────────────────────────────────────── */

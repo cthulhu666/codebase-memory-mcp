@@ -659,12 +659,10 @@ cbm_store_t *cbm_store_open(const char *project) {
     if (!project) {
         return NULL;
     }
-    const char *cdir = cbm_resolve_cache_dir();
-    if (!cdir) {
-        cdir = cbm_tmpdir();
-    }
     char path[CBM_SZ_1K];
-    snprintf(path, sizeof(path), "%s/%s.db", cdir, project);
+    char cache_dir[CBM_SZ_1K];
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+    snprintf(path, sizeof(path), "%s/%s.db", cache_dir, project);
     return store_open_internal(path, false);
 }
 

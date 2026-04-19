@@ -192,7 +192,9 @@ static char *resolve_db_path(const cbm_pipeline_t *p) {
     if (p->db_path) {
         snprintf(path, 1024, "%s", p->db_path);
     } else {
-        snprintf(path, 1024, "%s/%s.db", cbm_resolve_cache_dir(), p->project_name);
+        char cache_dir[CBM_SZ_1K];
+        cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+        snprintf(path, 1024, "%s/%s.db", cache_dir, p->project_name);
     }
     return path;
 }
@@ -644,11 +646,9 @@ static int dump_and_persist_hashes(cbm_pipeline_t *p, const cbm_file_info_t *fil
     if (p->db_path) {
         snprintf(db_path, sizeof(db_path), "%s", p->db_path);
     } else {
-        const char *cdir = cbm_resolve_cache_dir();
-        if (!cdir) {
-            cdir = cbm_tmpdir();
-        }
-        snprintf(db_path, sizeof(db_path), "%s/%s.db", cdir, p->project_name);
+        char cache_dir[CBM_SZ_1K];
+        cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+        snprintf(db_path, sizeof(db_path), "%s/%s.db", cache_dir, p->project_name);
     }
     char db_dir[CBM_SZ_1K];
     snprintf(db_dir, sizeof(db_dir), "%s", db_path);

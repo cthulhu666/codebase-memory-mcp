@@ -95,10 +95,10 @@ const char *cbm_app_local_dir(void);
 
 /* ── Cache directory ────────────────────────────────────────────── */
 
-/* Resolve the database cache directory. All project indexes are stored here.
- * Priority: CBM_CACHE_DIR env var > ~/.cache/codebase-memory-mcp (default).
- * Returns static buffer or NULL if home is unavailable. */
-const char *cbm_resolve_cache_dir(void);
+/* Cross-platform cache directory root for codebase-memory-mcp.
+ * Priority: CBM_CACHE_DIR env var > XDG_CACHE_HOME > ~/.cache > tmpdir.
+ * Writes the final "…/codebase-memory-mcp" path into buf and returns buf. */
+const char *cbm_get_cache_dir(char *buf, size_t buf_sz);
 
 /* ── File system ───────────────────────────────────────────────── */
 

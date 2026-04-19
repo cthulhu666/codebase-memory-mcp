@@ -144,7 +144,7 @@ Removes all agent configs, skills, hooks, and instructions. Does not remove the 
 - **Dead code detection**: Finds functions with zero callers, excluding entry points
 - **Route nodes**: REST endpoints are first-class graph entities
 - **CLI mode**: `codebase-memory-mcp cli search_graph '{"name_pattern": ".*Handler.*"}'`
-- **Single binary, zero infrastructure**: SQLite-backed, persists to `~/.cache/codebase-memory-mcp/`
+- **Single binary, zero infrastructure**: SQLite-backed, persists to `$XDG_CACHE_HOME/codebase-memory-mcp/` (falls back to `~/.cache/codebase-memory-mcp/`)
 
 ## How It Works
 
@@ -388,7 +388,7 @@ Project config overrides global for conflicting extensions. Unknown language val
 
 ## Persistence
 
-SQLite databases stored at `~/.cache/codebase-memory-mcp/`. Persists across restarts (WAL mode, ACID-safe). To reset: `rm -rf ~/.cache/codebase-memory-mcp/`.
+SQLite databases stored at `$XDG_CACHE_HOME/codebase-memory-mcp/` when `XDG_CACHE_HOME` is set, otherwise `~/.cache/codebase-memory-mcp/`. Persists across restarts (WAL mode, ACID-safe). To reset: `rm -rf ~/.cache/codebase-memory-mcp/` (or `$XDG_CACHE_HOME/codebase-memory-mcp/` if overridden).
 
 ## Troubleshooting
 
