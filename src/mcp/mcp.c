@@ -646,15 +646,8 @@ bool cbm_mcp_server_has_cached_store(cbm_mcp_server_t *srv) {
 
 /* ── Cache dir + project DB path helpers ───────────────────────── */
 
-/* Returns the platform cache directory: ~/.cache/codebase-memory-mcp
- * Writes to buf, returns buf for convenience. */
 static const char *cache_dir(char *buf, size_t bufsz) {
-    const char *home = cbm_get_home_dir();
-    if (!home) {
-        home = cbm_tmpdir();
-    }
-    snprintf(buf, bufsz, "%s/.cache/codebase-memory-mcp", home);
-    return buf;
+    return cbm_get_cache_dir(buf, bufsz);
 }
 
 /* Returns full .db path for a project: <cache_dir>/<project>.db */
@@ -3159,21 +3152,19 @@ static void maybe_auto_index(cbm_mcp_server_t *srv) {
     }
 
     /* Check if project already has a DB */
-    const char *home = cbm_get_home_dir();
-    if (home) {
-        char db_check[CBM_SZ_1K];
-        snprintf(db_check, sizeof(db_check), "%s/.cache/codebase-memory-mcp/%s.db", home,
-                 srv->session_project);
-        struct stat st;
-        if (stat(db_check, &st) == 0) {
-            /* Already indexed → register watcher for change detection */
-            cbm_log_info("autoindex.skip", "reason", "already_indexed", "project",
-                         srv->session_project);
-            if (srv->watcher) {
-                cbm_watcher_watch(srv->watcher, srv->session_project, srv->session_root);
-            }
-            return;
+    char cache_dir[CBM_SZ_1K];
+    char db_check[CBM_SZ_1K];
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+    snprintf(db_check, sizeof(db_check), "%s/%s.db", cache_dir, srv->session_project);
+    struct stat st;
+    if (stat(db_check, &st) == 0) {
+        /* Already indexed → register watcher for change detection */
+        cbm_log_info("autoindex.skip", "reason", "already_indexed", "project",
+                     srv->session_project);
+        if (srv->watcher) {
+            cbm_watcher_watch(srv->watcher, srv->session_project, srv->session_root);
         }
+        return;
     }
 
 /* Default file limit for auto-indexing new projects */

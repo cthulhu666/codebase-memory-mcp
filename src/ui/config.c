@@ -21,11 +21,9 @@
 /* ── Path ────────────────────────────────────────────────────── */
 
 void cbm_ui_config_path(char *buf, int bufsz) {
-    const char *home = cbm_get_home_dir();
-    if (!home) {
-        home = cbm_tmpdir();
-    }
-    snprintf(buf, (size_t)bufsz, "%s/.cache/codebase-memory-mcp/config.json", home);
+    char cache_dir[CBM_SZ_1K];
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+    snprintf(buf, (size_t)bufsz, "%s/config.json", cache_dir);
 }
 
 /* ── Load ────────────────────────────────────────────────────── */

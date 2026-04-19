@@ -166,11 +166,9 @@ static char *resolve_db_path(const cbm_pipeline_t *p) {
     if (p->db_path) {
         snprintf(path, 1024, "%s", p->db_path);
     } else {
-        const char *home = cbm_get_home_dir();
-        if (!home) {
-            home = cbm_tmpdir();
-        }
-        snprintf(path, 1024, "%s/.cache/codebase-memory-mcp/%s.db", home, p->project_name);
+        char cache_dir[CBM_SZ_1K];
+        cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+        snprintf(path, 1024, "%s/%s.db", cache_dir, p->project_name);
     }
     return path;
 }
@@ -595,16 +593,13 @@ static int64_t stat_mtime_ns(const struct stat *fst) {
 static int dump_and_persist_hashes(cbm_pipeline_t *p, const cbm_file_info_t *files, int file_count,
                                    struct timespec *t) {
     cbm_clock_gettime(CLOCK_MONOTONIC, t);
-    const char *home = cbm_get_home_dir();
     char db_path[CBM_SZ_1K];
     if (p->db_path) {
         snprintf(db_path, sizeof(db_path), "%s", p->db_path);
     } else {
-        if (!home) {
-            home = cbm_tmpdir();
-        }
-        snprintf(db_path, sizeof(db_path), "%s/.cache/codebase-memory-mcp/%s.db", home,
-                 p->project_name);
+        char cache_dir[CBM_SZ_1K];
+        cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
+        snprintf(db_path, sizeof(db_path), "%s/%s.db", cache_dir, p->project_name);
     }
     char db_dir[CBM_SZ_1K];
     snprintf(db_dir, sizeof(db_dir), "%s", db_path);

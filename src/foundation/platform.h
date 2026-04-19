@@ -81,6 +81,11 @@ const char *cbm_safe_getenv(const char *name, char *buf, size_t buf_sz, const ch
  * Returns NULL when neither is set. */
 const char *cbm_get_home_dir(void);
 
+/* Cross-platform cache directory root for codebase-memory-mcp.
+ * Prefers XDG_CACHE_HOME when set, else falls back to ~/.cache, then tmp.
+ * Writes the final "…/codebase-memory-mcp" path into buf and returns buf. */
+const char *cbm_get_cache_dir(char *buf, size_t buf_sz);
+
 /* ── File system ───────────────────────────────────────────────── */
 
 /* Check if a path exists. */

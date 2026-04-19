@@ -2047,14 +2047,11 @@ unsigned char *cbm_extract_binary_from_zip(const unsigned char *data, int data_l
 
 static const char *get_cache_dir(const char *home_dir) {
     static char buf[CLI_BUF_1K];
-    if (!home_dir) {
-        home_dir = cbm_get_home_dir();
+    if (home_dir) {
+        snprintf(buf, sizeof(buf), "%s/.cache/codebase-memory-mcp", home_dir);
+        return buf;
     }
-    if (!home_dir) {
-        return NULL;
-    }
-    snprintf(buf, sizeof(buf), "%s/.cache/codebase-memory-mcp", home_dir);
-    return buf;
+    return cbm_get_cache_dir(buf, sizeof(buf));
 }
 
 int cbm_list_indexes(const char *home_dir) {
@@ -2279,7 +2276,7 @@ int cbm_cmd_config(int argc, char **argv) {
     }
 
     char cache_dir[CLI_BUF_1K];
-    snprintf(cache_dir, sizeof(cache_dir), "%s/.cache/codebase-memory-mcp", home);
+    cbm_get_cache_dir(cache_dir, sizeof(cache_dir));
 
     cbm_config_t *cfg = cbm_config_open(cache_dir);
     if (!cfg) {

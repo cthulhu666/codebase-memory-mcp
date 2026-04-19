@@ -6,6 +6,7 @@
 #include "platform.h"
 
 #include "foundation/constants.h"
+#include "foundation/compat.h"
 #include <fcntl.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -298,4 +299,21 @@ const char *cbm_get_home_dir(void) {
         return buf;
     }
     return NULL;
+}
+
+const char *cbm_get_cache_dir(char *buf, size_t buf_sz) {
+    char xdg_cache[CBM_SZ_1K] = "";
+    const char *home = cbm_get_home_dir();
+
+    cbm_safe_getenv("XDG_CACHE_HOME", xdg_cache, sizeof(xdg_cache), NULL);
+    if (xdg_cache[0]) {
+        snprintf(buf, buf_sz, "%s/codebase-memory-mcp", xdg_cache);
+    } else if (home) {
+        snprintf(buf, buf_sz, "%s/.cache/codebase-memory-mcp", home);
+    } else {
+        snprintf(buf, buf_sz, "%s/codebase-memory-mcp", cbm_tmpdir());
+    }
+
+    cbm_normalize_path_sep(buf);
+    return buf;
 }
